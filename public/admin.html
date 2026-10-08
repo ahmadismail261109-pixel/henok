@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Minimalist Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --accent: #4f46e5;
+            --accent-hover: #4338ca;
+            --accent-light: rgba(79, 70, 229, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Login Modal */
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 36px;
+            border-radius: 16px;
+            max-width: 380px;
+            width: 90%;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .login-box h2 {
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .login-box input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .login-box button:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Admin Dashboard */
+        .dashboard {
+            display: none;
+        }
+
+        .header {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 24px 28px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+        }
+
+        .header h1 {
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .header .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header .admin-info span {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: var(--bg-main);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: #fee2e2;
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 20px 24px;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+        }
+
+        .stat-card h3 {
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .number {
+            color: var(--text-primary);
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .users-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            color: var(--text-primary);
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .refresh-btn {
+            padding: 8px 14px;
+            background: var(--accent-light);
+            color: var(--accent);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: background 0.2s ease;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(79, 70, 229, 0.15);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-main);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        td {
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+            text-transform: capitalize;
+        }
+
+        .status.pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status.approved {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status.rejected {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .traffic-info {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .traffic-info span {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .action-btn {
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            background: #ffffff;
+            transition: all 0.2s ease;
+        }
+
+        .approve-btn {
+            color: #15803d;
+        }
+        .approve-btn:hover:not(:disabled) { background: #dcfce7; border-color: #bbf7d0; }
+
+        .reject-btn {
+            color: #dc2626;
+        }
+        .reject-btn:hover:not(:disabled) { background: #fee2e2; border-color: #fecaca; }
+
+        .delete-btn {
+            color: var(--text-secondary);
+        }
+        .delete-btn:hover:not(:disabled) { background: var(--bg-main); color: var(--text-primary); }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .loading, .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Modal -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-box">
+            <h2>Admin Login</h2>
+            <form id="loginForm">
+                <input type="password" id="adminPassword" placeholder="Masukkan password admin" required>
+                <button type="submit">Akses Panel</button>
+            </form>
+            <div class="message" id="loginMessage"></div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="container dashboard" id="dashboard">
+        <div class="header">
+            <h1>Hotspot Control Panel</h1>
+            <div class="admin-info">
+                <span id="adminName">Sasuke</span>
+                <button class="logout-btn" onclick="logout()">Keluar</button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Total Users</h3>
+                <div class="number" id="totalUsers">2</div>
+            </div>
+            <div class="stat-card">
+                <h3>Pending</h3>
+                <div class="number" id="pendingUsers">1</div>
+            </div>
+            <div class="stat-card">
+                <h3>Approved</h3>
+                <div class="number" id="approvedUsers">1</div>
+            </div>
+            <div class="stat-card">
+                <h3>Rejected</h3>
+                <div class="number" id="rejectedUsers">0</div>
+            </div>
+        </div>
+
+        <div class="users-section">
+            <div class="section-header">
+                <h2>Daftar (Preview Mode)</h2>
+                <button class="refresh-btn" onclick="loadUsers()">Refresh</button>
+            </div>
+
+            <div class="message" id="message"></div>
+
+            <div class="table-container">
+                <table id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Email</th>
+                            <th>Username</th>
+                            <th>Status</th>
+                            <th>Tanggal</th>
+                            <th>Penggunaan Traffic</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr>
+                            <td>Ahmad</td>
+                            <td>ahmad@smk.sch.id</td>
+                            <td>ahmad_net</td>
+                            <td><span class="status approved">approved</span></td>
+                            <td>06/10/2026</td>
+                            <td>
+                                <div class="traffic-info">
+                                    ⏱️ Uptime: <span>02:15:30</span><br>
+                                    ⬇ Download: <span>145.2 MB</span> | ⬆️ Upload: <span>24.5 MB</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn approve-btn" disabled>✓ Approve</button>
+                                    <button class="action-btn reject-btn" disabled>✗ Reject</button>
+                                    <button class="action-btn delete-btn">🗑 Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Budi Santoso</td>
+                            <td>budi@gmail.com</td>
+                            <td>budi_hotspot</td>
+                            <td><span class="status pending">pending</span></td>
+                            <td>06/10/2026</td>
+                            <td>
+                                <div class="traffic-info">
+                                    ⏱️ Uptime: <span>Off</span><br>
+                                    ⬇️ Download: <span>0 B</span> | ⬆️ Upload: <span>0 B</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn approve-btn">✓ Approve</button>
+                                    <button class="action-btn reject-btn">✗ Reject</button>
+                                    <button class="action-btn delete-btn">🗑 Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <p>Belum ada user terdaftar</p>
+            </div>
+
+            <div class="loading" id="loading" style="display: none;">
+                Memuat data...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isAdminLoggedIn = false;
+        let adminName = 'Admin';
+
+        if (localStorage.getItem('adminLoggedIn') === 'true') {
+            isAdminLoggedIn = true;
+            showDashboard();
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = document.getElementById('adminPassword').value;
+
+            if (password.trim() !== '') {
+                isAdminLoggedIn = true;
+                localStorage.setItem('adminLoggedIn', 'true');
+                showDashboard();
+            } else {
+                showLoginMessage('Password tidak boleh kosong!', 'error');
+            }
+        });
+
+        function showLoginMessage(text, type) {
+            const message = document.getElementById('loginMessage');
+            message.textContent = text;
+            message.className = `message ${type}`;
+            message.style.display = 'block';
+
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 3000);
+        }
+
+        function showDashboard() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('adminName').textContent = adminName;
+        }
+
+        function logout() {
+            isAdminLoggedIn = false;
+            localStorage.removeItem('adminLoggedIn');
+            document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+        }
+
+        function loadUsers() {
+            showMessage('Data berhasil direfresh (Preview Mode)', 'success');
+        }
+
+        function showMessage(text, type) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = `message ${type}`;
+            message.style.display = 'block';
+
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

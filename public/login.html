@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotspot Login - Minimalist Network</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+        }
+        
+        body {
+            background-color: #f8fafc;
+            background-image: radial-gradient(rgba(79, 70, 229, 0.05) 1px, transparent 1px);
+            background-size: 24px 24px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #0f172a;
+        }
+
+        .container {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            padding: 36px;
+            max-width: 420px;
+            width: 100%;
+            position: relative;
+        }
+
+        .header { 
+            text-align: center; 
+            margin-bottom: 28px; 
+        }
+        
+        .header h1 { 
+            color: #0f172a; 
+            font-size: 20px; 
+            font-weight: 700; 
+            margin-bottom: 6px; 
+        }
+        
+        .header p { 
+            color: #64748b; 
+            font-size: 12px; 
+            font-weight: 600;
+            text-transform: uppercase; 
+            letter-spacing: 0.05em; 
+        }
+        
+        /* Icon Core / Neural Link */
+        .racing-icon {
+            width: 60px; 
+            height: 60px; 
+            margin: 0 auto 16px;
+            background: rgba(79, 70, 229, 0.1);
+            color: #4f46e5;
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 26px;
+        }
+
+        .form-group { 
+            margin-bottom: 16px; 
+        }
+        
+        .form-group label { 
+            display: block; 
+            margin-bottom: 6px; 
+            color: #475569; 
+            font-weight: 600; 
+            font-size: 12px; 
+        }
+        
+        .form-group input {
+            width: 100%; 
+            padding: 12px 16px; 
+            background: #f8fafc; 
+            border: 1px solid #e2e8f0;
+            border-radius: 8px; 
+            font-size: 14px; 
+            color: #0f172a; 
+            outline: none; 
+            transition: all 0.2s ease;
+        }
+        
+        .form-group input:focus { 
+            border-color: #4f46e5; 
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); 
+            background: #ffffff;
+        }
+
+        .btn {
+            width: 100%; 
+            padding: 12px; 
+            background: #4f46e5;
+            color: #ffffff; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 14px; 
+            font-weight: 600; 
+            cursor: pointer;
+            transition: background 0.2s ease;
+            margin-top: 4px;
+        }
+        
+        .btn:hover { background: #4338ca; }
+        .btn:active { transform: scale(0.99); }
+        .btn:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; }
+        
+        .message { 
+            padding: 12px 16px; 
+            border-radius: 8px; 
+            margin-top: 16px; 
+            display: none; 
+            font-size: 13px; 
+            font-weight: 500; 
+        }
+        .message.success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+        .message.error { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+        .message.info { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+        
+        .register-link { text-align: center; margin-top: 20px; color: #64748b; font-size: 13px; }
+        .register-link a { color: #4f46e5; text-decoration: none; font-weight: 600; }
+        .register-link a:hover { text-decoration: underline; }
+        
+        .loading {
+            display: inline-block; width: 14px; height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: #ffffff;
+            animation: spin 0.8s linear infinite; margin-right: 6px; vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .status-check { margin-top: 16px; padding: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: none; }
+        .status-check.show { display: block; }
+        .status-check input { width: calc(100% - 70px); padding: 10px 12px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; color: #0f172a; margin-right: 6px; outline: none; font-size: 13px; }
+        .status-check input:focus { border-color: #4f46e5; }
+        .status-check button { padding: 10px 14px; background: #e2e8f0; color: #334155; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; transition: background 0.2s; }
+        .status-check button:hover { background: #cbd5e1; }
+        
+        .status-result { margin-top: 10px; padding: 10px; border-radius: 6px; font-size: 12px; font-weight: 500; display: none; }
+        .status-result.approved { background: #dcfce7; color: #15803d; }
+        .status-result.pending { background: #fef3c7; color: #d97706; }
+        .status-result.rejected { background: #fee2e2; color: #dc2626; }
+        .status-result.not-found { background: #f1f5f9; color: #64748b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="racing-icon">⚡</div>
+            <h1>Neural Hotspot</h1>
+            <p>High-Speed Telemetry Network</p>
+        </div>
+
+        <!-- FORM LOGIN BACKEND + MIKROTIK INTEGRATION -->
+        <form id="loginForm" name="login" action="$(link-login-only)" method="post">
+            <input type="hidden" name="dst" value="$(link-orig)">
+            <input type="hidden" name="popup" value="true">
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" value="" required placeholder="Masukkan username driver">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Masukkan password">
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">
+                <span id="btnText">MASUK</span>
+            </button>
+        </form>
+
+        <div class="message" id="message"></div>
+
+        <div class="status-check" id="statusCheck">
+            <p style="margin-bottom: 8px; color: #475569; font-size: 11px; font-weight: 700; text-transform: uppercase;">Cek Telemetri Registrasi:</p>
+            <div style="display: flex;">
+                <input type="text" id="checkUsername" placeholder="Username Driver">
+                <button type="button" onclick="checkStatus()">Cek</button>
+            </div>
+            <div class="status-result" id="statusResult"></div>
+        </div>
+
+        <div class="register-link">
+            Belum punya akun? <a href="register.html">Registrasi</a>
+        </div>
+
+        <div style="text-align: center; margin-top: 16px;">
+            <button type="button" onclick="toggleStatusCheck()" style="background: none; border: none; color: #4f46e5; cursor: pointer; font-size: 12px; font-weight: 600; text-decoration: underline;">
+                Cek status registrasi 
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = window.location.origin.includes('vercel.app') 
+            ? window.location.origin 
+            : 'https://mikrotik-hostpot-login-done.vercel.app';
+
+        const form = document.getElementById('loginForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const message = document.getElementById('message');
+        const statusCheck = document.getElementById('statusCheck');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const usernameVal = document.getElementById('username').value;
+            const passwordVal = document.getElementById('password').value;
+
+            const formData = {
+                username: usernameVal,
+                password: passwordVal
+            };
+
+            submitBtn.disabled = true;
+            btnText.innerHTML = '<span class="loading"></span> Connecting Telemetry...';
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage(`System initialized, Driver ${data.user.name}! Login berhasil.`, 'success');
+                    
+                    setTimeout(() => {
+                        showMessage('Masuk ke jalur utama...', 'info');
+                        HTMLFormElement.prototype.submit.call(form);
+                    }, 1500);
+                } else {
+                    showMessage(data.message, 'error');
+                    submitBtn.disabled = false;
+                    btnText.textContent = 'MASUK';
+                }
+            } catch (error) {
+                showMessage('Backend offline, mencoba langsung koneksi MikroTik...', 'info');
+                setTimeout(() => {
+                    HTMLFormElement.prototype.submit.call(form);
+                }, 1000);
+            }
+        });
+
+        function toggleStatusCheck() {
+            statusCheck.classList.toggle('show');
+        }
+
+        async function checkStatus() {
+            const username = document.getElementById('checkUsername').value;
+            const statusResult = document.getElementById('statusResult');
+
+            if (!username) {
+                statusResult.textContent = 'Masukkan username driver terlebih dahulu';
+                statusResult.className = 'status-result not-found';
+                statusResult.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/status/${username}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    statusResult.textContent = `Status: ${data.status.toUpperCase()}`;
+                    statusResult.className = `status-result ${data.status}`;
+                    statusResult.style.display = 'block';
+
+                    if (data.status === 'pending') {
+                        statusResult.textContent += ' - Menunggu akses dari System (Admin)';
+                    } else if (data.status === 'approved') {
+                        statusResult.textContent += ' - Siap terhubung ke jaringan';
+                    } else if (data.status === 'rejected') {
+                        statusResult.textContent += ' - Akses ditolak';
+                    }
+                } else {
+                    statusResult.textContent = data.message;
+                    statusResult.className = 'status-result not-found';
+                    statusResult.style.display = 'block';
+                }
+            } catch (error) {
+                statusResult.textContent = 'Gagal mengecek status (Server backend tidak aktif)';
+                statusResult.className = 'status-result not-found';
+                statusResult.style.display = 'block';
+            }
+        }
+
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.className = `message ${type}`;
+            message.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
